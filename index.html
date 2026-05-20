@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Electoral Digital - Portal Oficial</title>
+  <title>Plataforma Electoral Integral</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Oculta las barras de scroll molestas manteniendo funcionalidad */
-    iframe {
-      border: none;
-      width: 100%;
+    /* Forzamos que el cuerpo ocupe toda la pantalla real del dispositivo sin scroll exterior */
+    html, body {
       height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 font-sans flex flex-col h-full">
 
-  <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg z-50">
+  <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg shrink-0 z-50">
     <div class="flex items-center gap-3">
       <span class="text-xl">🗳️</span>
       <div>
@@ -26,58 +27,59 @@
     </div>
     
     <div class="flex flex-wrap gap-2 justify-center">
-      <button onclick="cargarApp('votacion')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md transition-all hover:bg-indigo-500">
+      <button id="btn-votacion" onclick="cargarApp('votacion')" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200">
         📥 Módulo de Votación
       </button>
-      <button onclick="cargarApp('transparencia')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white">
+      <button id="btn-transparencia" onclick="cargarApp('transparencia')" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200">
         📊 Resultados en Vivo
       </button>
-      <button onclick="cargarApp('administrador')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white">
+      <button id="btn-administrador" onclick="cargarApp('administrador')" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200">
         ⚙️ Panel Administrador
       </button>
     </div>
   </nav>
 
-  <main class="flex-grow relative bg-slate-950">
+  <main class="flex-grow w-full relative bg-slate-950 overflow-hidden">
     <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-40 transition-opacity duration-300">
       <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p class="text-sm text-slate-400 font-medium">Desplegando entorno seguro de Google Apps Script...</p>
+      <p class="text-sm text-slate-400 font-medium">Cargando entorno seguro de Google Apps Script...</p>
     </div>
 
-    <iframe id="visorApp" src="" allow="clipboard-write" onload="ocultarLoader()"></iframe>
+    <iframe id="visorApp" class="w-full h-full border-0 block" src="" allow="clipboard-write" onload="ocultarLoader()"></iframe>
   </main>
 
   <script>
     // =========================================================================
-    // REEMPLAZA ESTA URL CON TU ENLACE BASE REAL DE GOOGLE APPS SCRIPT
+    // CONFIGURACIÓN DE TUS 3 ENLACES INDEPENDIENTES DE GOOGLE APPS SCRIPT
+    // (Pega aquí tus URLs reales /exec correspondientes de cada uno)
     // =========================================================================
-    const URL_BASE_SCRIPT = "https://script.google.com/macros/s/AKfycbzV-V_aLjn5-cCrH4ovWBsPmiixyM312ubTasft_UbAbXypD7buIPfh4pj1N0Y1c_X2pQ/exec";
-
-    // Configuración dinámica de rutas basadas en los parámetros de tu doGet
-    const rutas = {
-      votacion: URL_BASE_SCRIPT, // Sin parámetros abre tu index de votación de siempre
-      transparencia: URL_BASE_SCRIPT + "?v=transparencia", // Tu dashboard en tiempo real
-      administrador: URL_BASE_SCRIPT + "?v=admin" // Tu panel de control de administración
+    const enlacesAppsScript = {
+      votacion: "https://script.google.com/macros/s/AKfycbyc1WOCsMHAR6x_vFmCRECFfE592F8Irvexnxn5jVXzl4TdHzj-yIibPv351a6lvd7G/exec",
+      transparencia: "https://script.google.com/macros/s/AKfycbzV-V_aLjn5-cCrH4ovWBsPmiixyM312ubTasft_UbAbXypD7buIPfh4pj1N0Y1c_X2pQ/exec",
+      administrador: "https://script.google.com/macros/s/AKfycbyv7k7EBWuSlmpG6QKTAxCyG-3kowONZzHY0Q6vAdRQCcqa3C2be5Z6DB8uJzVxfEdPUQ/exec"
     };
 
     function cargarApp(modulo) {
       const iframe = document.getElementById("visorApp");
       const loader = document.getElementById("loader");
       
-      // Mostrar animación de carga al cambiar de módulo
+      // Activar pantalla de carga antes de la transición
       loader.style.opacity = "1";
       loader.style.pointerEvents = "auto";
       
-      // Cambiar la URL del iframe
-      iframe.src = rutas[modulo];
+      // Asignar el enlace correspondiente del objeto
+      iframe.src = enlacesAppsScript[modulo];
       
-      // Cambiar estilos de los botones para saber cuál está activo
-      const botones = document.querySelectorAll("button");
-      botones.forEach(btn => {
-        if(btn.setAttribute('onclick').includes(modulo)) {
-          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md transition-all";
+      // Actualizar los estilos visuales de los botones en vivo
+      const llaves = Object.keys(enlacesAppsScript);
+      llaves.forEach(key => {
+        const btn = document.getElementById("btn-" + key);
+        if (key === modulo) {
+          // Botón seleccionado (Estilo destacado en azul/indigo)
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md transition-all duration-200";
         } else {
-          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white";
+          // Botones inactivos (Estilo oscuro integrado)
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all duration-200 hover:bg-slate-700 hover:text-white";
         }
       });
     }
@@ -88,7 +90,7 @@
       loader.style.pointerEvents = "none";
     }
 
-    // Cargar por defecto el Módulo de Votación al abrir la página por primera vez
+    // Inicializar cargando el Módulo de Votación automáticamente en la primera visita
     document.addEventListener("DOMContentLoaded", () => {
       cargarApp('votacion');
     });
