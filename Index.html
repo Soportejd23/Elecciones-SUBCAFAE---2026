@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Electoral Digital - Portal Oficial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Oculta las barras de scroll molestas manteniendo funcionalidad */
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+
+  <nav class="bg-slate-950 border-b border-slate-800 px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg z-50">
+    <div class="flex items-center gap-3">
+      <span class="text-xl">🗳️</span>
+      <div>
+        <h1 class="text-md font-bold tracking-tight text-white">PLATAFORMA ELECTORAL INTEGRAL</h1>
+        <p class="text-[11px] text-slate-400">Portal de Acceso Centralizado Institucional</p>
+      </div>
+    </div>
+    
+    <div class="flex flex-wrap gap-2 justify-center">
+      <button onclick="cargarApp('votacion')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md transition-all hover:bg-indigo-500">
+        📥 Módulo de Votación
+      </button>
+      <button onclick="cargarApp('transparencia')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white">
+        📊 Resultados en Vivo
+      </button>
+      <button onclick="cargarApp('administrador')" class="btn-nav px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white">
+        ⚙️ Panel Administrador
+      </button>
+    </div>
+  </nav>
+
+  <main class="flex-grow relative bg-slate-950">
+    <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 z-40 transition-opacity duration-300">
+      <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p class="text-sm text-slate-400 font-medium">Desplegando entorno seguro de Google Apps Script...</p>
+    </div>
+
+    <iframe id="visorApp" src="" allow="clipboard-write" onload="ocultarLoader()"></iframe>
+  </main>
+
+  <script>
+    // =========================================================================
+    // REEMPLAZA ESTA URL CON TU ENLACE BASE REAL DE GOOGLE APPS SCRIPT
+    // =========================================================================
+    const URL_BASE_SCRIPT = "https://script.google.com/macros/s/AKfycbz...TU_ID_REAL.../exec";
+
+    // Configuración dinámica de rutas basadas en los parámetros de tu doGet
+    const rutas = {
+      votacion: URL_BASE_SCRIPT, // Sin parámetros abre tu index de votación de siempre
+      transparencia: URL_BASE_SCRIPT + "?v=transparencia", // Tu dashboard en tiempo real
+      administrador: URL_BASE_SCRIPT + "?v=admin" // Tu panel de control de administración
+    };
+
+    function cargarApp(modulo) {
+      const iframe = document.getElementById("visorApp");
+      const loader = document.getElementById("loader");
+      
+      // Mostrar animación de carga al cambiar de módulo
+      loader.style.opacity = "1";
+      loader.style.pointerEvents = "auto";
+      
+      // Cambiar la URL del iframe
+      iframe.src = rutas[modulo];
+      
+      // Cambiar estilos de los botones para saber cuál está activo
+      const botones = document.querySelectorAll("button");
+      botones.forEach(btn => {
+        if(btn.setAttribute('onclick').includes(modulo)) {
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-indigo-600 text-white shadow-md transition-all";
+        } else {
+          btn.className = "px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider bg-slate-800 text-slate-300 transition-all hover:bg-slate-700 hover:text-white";
+        }
+      });
+    }
+
+    function ocultarLoader() {
+      const loader = document.getElementById("loader");
+      loader.style.opacity = "0";
+      loader.style.pointerEvents = "none";
+    }
+
+    // Cargar por defecto el Módulo de Votación al abrir la página por primera vez
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarApp('votacion');
+    });
+  </script>
+</body>
+</html>
